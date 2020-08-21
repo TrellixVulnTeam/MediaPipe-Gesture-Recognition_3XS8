@@ -10,6 +10,7 @@ namespace
 {
 constexpr char normRectTag[] = "NORM_RECT";
 constexpr char normalizedLandmarkListTag[] = "NORM_LANDMARKS";
+constexpr char recognizedHandGestureTag[] = "RECOGNIZED_HAND_GESTURE";
 } // namespace
 
 // Graph config:
@@ -52,6 +53,8 @@ REGISTER_CALCULATOR(HandGestureRecognitionCalculator);
     RET_CHECK(cc->Inputs().HasTag(normRectTag));
     cc->Inputs().Tag(normRectTag).Set<NormalizedRect>();
 
+    RET_CHECK(cc->Outputs().HasTag(recognizedHandGestureTag));
+    cc->Outputs().Tag(recognizedHandGestureTag).Set<std::string>();
     return ::mediapipe::OkStatus();
 }
 
@@ -65,6 +68,7 @@ REGISTER_CALCULATOR(HandGestureRecognitionCalculator);
 ::mediapipe::Status HandGestureRecognitionCalculator::Process(
     CalculatorContext *cc)
 {
+    std::string *recognized_hand_gesture;
     // hand closed (red) rectangle
     const auto rect = &(cc->Inputs().Tag(normRectTag).Get<NormalizedRect>());
     float width = rect->width();
@@ -73,6 +77,8 @@ REGISTER_CALCULATOR(HandGestureRecognitionCalculator);
     if (width < 0.01 || height < 0.01)
     {
         LOG(INFO) << "No Hand Detected";
+	recognized_hand_gesture = new std::string("___");
+	cc->Outputs().Tag(recognizedHandGestureTag).Add(recognized_hand_gesture, cc->InputTimestamp());
         return ::mediapipe::OkStatus();
     }
 
@@ -123,48 +129,60 @@ REGISTER_CALCULATOR(HandGestureRecognitionCalculator);
     if (thumbIsOpen && firstFingerIsOpen && secondFingerIsOpen && thirdFingerIsOpen && fourthFingerIsOpen)
     {
         LOG(INFO) << "FIVE!";
+	recognized_hand_gesture = new std::string("FIVE!");
     }
     else if (!thumbIsOpen && firstFingerIsOpen && secondFingerIsOpen && thirdFingerIsOpen && fourthFingerIsOpen)
     {
         LOG(INFO) << "FOUR!";
+	recognized_hand_gesture = new std::string("FOUR!");
     }
     else if (thumbIsOpen && firstFingerIsOpen && secondFingerIsOpen && !thirdFingerIsOpen && !fourthFingerIsOpen)
     {
         LOG(INFO) << "TREE!";
+	recognized_hand_gesture = new std::string("THREE!");
     }
     else if (thumbIsOpen && firstFingerIsOpen && !secondFingerIsOpen && !thirdFingerIsOpen && !fourthFingerIsOpen)
     {
         LOG(INFO) << "TWO!";
+	recognized_hand_gesture = new std::string("TWO!");
     }
     else if (!thumbIsOpen && firstFingerIsOpen && !secondFingerIsOpen && !thirdFingerIsOpen && !fourthFingerIsOpen)
     {
         LOG(INFO) << "ONE!";
+	recognized_hand_gesture = new std::string("ONE!");
     }
     else if (!thumbIsOpen && firstFingerIsOpen && secondFingerIsOpen && !thirdFingerIsOpen && !fourthFingerIsOpen)
     {
         LOG(INFO) << "YEAH!";
+	recognized_hand_gesture = new std::string("YEAH!");
     }
     else if (!thumbIsOpen && firstFingerIsOpen && !secondFingerIsOpen && !thirdFingerIsOpen && fourthFingerIsOpen)
     {
         LOG(INFO) << "ROCK!";
+	recognized_hand_gesture = new std::string("ROCK!");
     }
     else if (thumbIsOpen && firstFingerIsOpen && !secondFingerIsOpen && !thirdFingerIsOpen && fourthFingerIsOpen)
     {
         LOG(INFO) << "SPIDERMAN!";
+	recognized_hand_gesture = new std::string("SPIDERMAN!");
     }
     else if (!thumbIsOpen && !firstFingerIsOpen && !secondFingerIsOpen && !thirdFingerIsOpen && !fourthFingerIsOpen)
     {
         LOG(INFO) << "FIST!";
+	recognized_hand_gesture = new std::string("FIST!");
     }
     else if (!firstFingerIsOpen && secondFingerIsOpen && thirdFingerIsOpen && fourthFingerIsOpen && this->isThumbNearFirstFinger(landmarkList.landmark(4), landmarkList.landmark(8)))
     {
         LOG(INFO) << "OK!";
+	recognized_hand_gesture = new std::string("OK!");
     }
     else
     {
+	recognized_hand_gesture = new std::string("___");
         LOG(INFO) << "Finger States: " << thumbIsOpen << firstFingerIsOpen << secondFingerIsOpen << thirdFingerIsOpen << fourthFingerIsOpen;
-        LOG(INFO) << "___";
+        //LOG(INFO) << "___";
     }
+    cc->Outputs().Tag(recognizedHandGestureTag).Add(recognized_hand_gesture, cc->InputTimestamp());
 
     return ::mediapipe::OkStatus();
 } // namespace mediapipe

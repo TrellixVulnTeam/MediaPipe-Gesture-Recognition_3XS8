@@ -47,6 +47,7 @@ constexpr char kInputVectorTag[] = "VECTOR";
 
 constexpr char kInputFrameTagGpu[] = "IMAGE_GPU";
 constexpr char kOutputFrameTagGpu[] = "IMAGE_GPU";
+constexpr char recognizedHandGestureTag[] = "RECOGNIZED_HAND_GESTURE";
 
 enum { ATTRIB_VERTEX, ATTRIB_TEXTURE_POSITION, NUM_ATTRIBUTES };
 
@@ -168,6 +169,8 @@ REGISTER_CALCULATOR(AnnotationOverlayCalculator);
 
 ::mediapipe::Status AnnotationOverlayCalculator::GetContract(
     CalculatorContract* cc) {
+  RET_CHECK(cc->Inputs().HasTag(recognizedHandGestureTag));
+  cc->Inputs().Tag(recognizedHandGestureTag).Set<std::string>();
   CHECK_GE(cc->Inputs().NumEntries(), 1);
 
   bool use_gpu = false;
@@ -321,6 +324,8 @@ REGISTER_CALCULATOR(AnnotationOverlayCalculator);
     }
   }
 
+  const auto &recognizedHandGesture = cc->Inputs().Tag(recognizedHandGestureTag).Get<std::string>();
+  renderer_->DrawText(recognizedHandGesture);
   if (use_gpu_) {
 #if !defined(MEDIAPIPE_DISABLE_GPU)
     // Overlay rendered image in OpenGL, onto a copy of input.
