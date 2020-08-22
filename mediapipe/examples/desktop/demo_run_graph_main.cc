@@ -30,6 +30,8 @@ constexpr char kInputStream[] = "input_video";
 constexpr char kOutputStream[] = "output_video";
 constexpr char kWindowName[] = "MediaPipe";
 
+#define camera_path "rtmp://210.114.90.141:1935/live/test"
+
 DEFINE_string(
     calculator_graph_config_file, "",
     "Name of file containing text format CalculatorGraphConfig proto.");
@@ -60,7 +62,7 @@ DEFINE_string(output_video_path, "",
   if (load_video) {
     capture.open(FLAGS_input_video_path);
   } else {
-    capture.open("rtmp://210.114.90.141:1935/live/test");
+    capture.open(camera_path);
   }
   RET_CHECK(capture.isOpened());
 
