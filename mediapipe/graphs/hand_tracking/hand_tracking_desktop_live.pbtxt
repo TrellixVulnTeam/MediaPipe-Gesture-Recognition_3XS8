@@ -110,7 +110,7 @@ node {
 
 # New node for streaming over UDP
 node {
-	calculator: "MyPassThroughCalculator"
+	calculator: "JSONPassThroughCalculator"
 	input_stream: "LANDMARKS:hand_landmarks"
 	input_stream: "NORM_RECT:hand_rect"
 	input_stream: "DETECTIONS:palm_detections"

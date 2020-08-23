@@ -1,0 +1,49 @@
+[1mdiff --git a/mediapipe/graphs/hand_tracking/BUILD b/mediapipe/graphs/hand_tracking/BUILD[m
+[1mindex ebcfec8..b68873b 100644[m
+[1m--- a/mediapipe/graphs/hand_tracking/BUILD[m
+[1m+++ b/mediapipe/graphs/hand_tracking/BUILD[m
+[36m@@ -35,7 +35,8 @@[m [mcc_library([m
+         "//mediapipe/calculators/core:previous_loopback_calculator",[m
+         "//mediapipe/calculators/video:opencv_video_decoder_calculator",[m
+         "//mediapipe/calculators/video:opencv_video_encoder_calculator",[m
+[31m-				"//udp-streaming:my_pass_through_calculator"[m
+[32m+[m				[32m#"//udp-streaming:my_pass_through_calculator",[m
+[32m+[m				[32m"//udp-streaming:json_pass_through_calculator",[m
+     ],[m
+ )[m
+ [m
+[1mdiff --git a/mediapipe/graphs/hand_tracking/hand_tracking_desktop_live.pbtxt b/mediapipe/graphs/hand_tracking/hand_tracking_desktop_live.pbtxt[m
+[1mindex f60b0b3..2a06265 100644[m
+[1m--- a/mediapipe/graphs/hand_tracking/hand_tracking_desktop_live.pbtxt[m
+[1m+++ b/mediapipe/graphs/hand_tracking/hand_tracking_desktop_live.pbtxt[m
+[36m@@ -110,7 +110,7 @@[m [mnode {[m
+ [m
+ # New node for streaming over UDP[m
+ node {[m
+[31m-	calculator: "MyPassThroughCalculator"[m
+[32m+[m	[32mcalculator: "JSONPassThroughCalculator"[m
+ 	input_stream: "LANDMARKS:hand_landmarks"[m
+ 	input_stream: "NORM_RECT:hand_rect"[m
+ 	input_stream: "DETECTIONS:palm_detections"[m
+[1mdiff --git a/udp-streaming/BUILD b/udp-streaming/BUILD[m
+[1mindex d1bd795..0f756b6 100644[m
+[1m--- a/udp-streaming/BUILD[m
+[1m+++ b/udp-streaming/BUILD[m
+[36m@@ -1,6 +1,6 @@[m
+ cc_library([m
+[31m-	name = "my_pass_through_calculator",[m
+[31m-	srcs = ["my_pass_through_calculator.cc"],[m
+[32m+[m	[32mname = "json_pass_through_calculator",[m
+[32m+[m	[32msrcs = ["json_pass_through_calculator.cc"],[m
+ 	visibility = ["//visibility:public"],[m
+ 	deps = [[m
+ 		"//mediapipe/framework:calculator_framework",[m
+[36m@@ -8,7 +8,7 @@[m [mcc_library([m
+ 		"//mediapipe/framework/formats:landmark_cc_proto",[m
+ 		"//mediapipe/framework/formats:rect_cc_proto",[m
+ 		"//mediapipe/framework/formats:detection_cc_proto",[m
+[31m-		#"//udp-streaming/formats:wrapper_hand_tracking_proto",[m
+[32m+[m[32m#		"//udp-streaming/formats:wrapper_hand_tracking_proto",[m
+ 		"//mediapipe/framework/formats:wrapper_hand_tracking_cc_proto",[m
+ 	],[m
+ 	alwayslink = 1,[m

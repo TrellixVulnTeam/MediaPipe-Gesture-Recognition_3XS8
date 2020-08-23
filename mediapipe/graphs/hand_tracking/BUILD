@@ -35,7 +35,8 @@ cc_library(
         "//mediapipe/calculators/core:previous_loopback_calculator",
         "//mediapipe/calculators/video:opencv_video_decoder_calculator",
         "//mediapipe/calculators/video:opencv_video_encoder_calculator",
-				"//udp-streaming:my_pass_through_calculator"
+				#"//udp-streaming:my_pass_through_calculator",
+				"//udp-streaming:json_pass_through_calculator",
     ],
 )
 
