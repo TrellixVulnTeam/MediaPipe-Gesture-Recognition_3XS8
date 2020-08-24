@@ -30,6 +30,31 @@ constexpr char kNormLandmarksTag[] = "NORM_LANDMARKS"; // MAD note @to-fix: stre
 constexpr char kNormRectTag[] = "NORM_RECT";
 constexpr char kDetectionsTag[] = "DETECTIONS";
 
+void setup_udp(){
+	// int sockfd;
+	char buffer[MAXLINE];
+	// For testing the server
+	// struct sockaddr_in servaddr;
+	// Creating socket file descriptor
+	if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0){
+		perror("Socket creation failed");
+		exit(EXIT_FAILURE);
+	}
+	memset(&servaddr, 0, sizeof(servaddr));
+
+	// Filling server information
+	servaddr.sin_family = AF_INET;
+	servaddr.sin_port = htons(PORT);
+	servaddr.sin_addr.s_addr = INADDR_ANY;
+	
+	// Initial testing for connection
+	// char *hello = "Hello from client";
+	// while(true){
+	//	sendto(sockfd, (const char*)hello, strlen(hello), 0, (const struct sockaddr *) &servaddr, sizeof(servaddr));
+	//	printf("Hello message sent. \n");
+	// } 
+	// colse(sockfd);
+}
 
 // A Calculator that simply passes its input Packets and header through,
 // unchanged.  The inputs may be specified by tag or index.  The outputs
@@ -88,6 +113,9 @@ class JSONPassThroughCalculator : public CalculatorBase {
     }
     cc->SetOffset(TimestampDiff(0));
 
+		//Socket
+		setup_udp();
+
     return ::mediapipe::OkStatus();
   }
 
@@ -133,10 +161,11 @@ class JSONPassThroughCalculator : public CalculatorBase {
               const Detection& detection = detections[i];
               // std::cout << "\n----- Detection -----\n " << detection.DebugString() << '\n';
               // wrapper->mutable_detection()->add_detection();
-          std::string msg_buffer;
+          //Just wanted to test if it will be converted.. It worked
+					//std::string msg_buffer;
 					//For JSON conversion
-					proto_ns::util::JsonPrintOptions options;
-					proto_ns::util::MessageToJsonString(detection, &msg_buffer, options);
+					//proto_ns::util::JsonPrintOptions options;
+					//proto_ns::util::MessageToJsonString(detection, &msg_buffer, options);
 					//For testing JSON string
          	//std::cout << "JSON Palm: " << msg_buffer << '\n';
 
@@ -161,28 +190,26 @@ class JSONPassThroughCalculator : public CalculatorBase {
          	//std::cout << "JSON Hand Rect: " << msg_buffer << '\n';
 
 					//Socket
-					/*sendto(sockfd, msg_buffer.c_str(), msg_buffer.length(),
+					sendto(sockfd, msg_buffer.c_str(), msg_buffer.length(),
               0, (const struct sockaddr *) &servaddr,
-                  sizeof(servaddr));*/
+                  sizeof(servaddr));
 
         }
 
         std::string msg_buffer;
 				proto_ns::MessageLite* ConvertToMessageLite(wrapper);
-				//wrapper->SerializeToString(&msg_buffer);
-        // const WrapperHandTracking& pack_wrapper = MakePacket<WrapperHandTracking>(*wrapper).Get<WrapperHandTracking>();
-					//For JSON conversion
+				//For JSON conversion
 				proto_ns::util::JsonPrintOptions options;
 				proto_ns::util::MessageToJsonString(*wrapper, &msg_buffer, options);
-					//For testing JSON string
+				//For testing JSON string
         std::cout << "JSON Wrapper: " << msg_buffer << '\n';
 
 				//Socket
-				/*sendto(sockfd, msg_buffer.c_str(), msg_buffer.length(),
+				sendto(sockfd, msg_buffer.c_str(), msg_buffer.length(),
             0, (const struct sockaddr *) &servaddr,
-                sizeof(servaddr));*/
-      /*-------------------------------------------------------------------*/
+                sizeof(servaddr));
 
+      /*-------------------------------------------------------------------*/
         VLOG(3) << "Passing " << cc->Inputs().Get(id).Name() << " to "
                 << cc->Outputs().Get(id).Name() << " at "
                 << cc->InputTimestamp().DebugString();
@@ -197,7 +224,7 @@ class JSONPassThroughCalculator : public CalculatorBase {
       return ::mediapipe::OkStatus();
     }
     // Socket
-		//close(sockfd);
+		close(sockfd);
     return ::mediapipe::OkStatus();
   }
 
