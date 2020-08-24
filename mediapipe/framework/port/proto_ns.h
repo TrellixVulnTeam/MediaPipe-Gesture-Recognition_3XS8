@@ -22,6 +22,7 @@
 #include "google/protobuf/message.h"
 #include "google/protobuf/message_lite.h"
 #include "google/protobuf/repeated_field.h"
+#include "google/protobuf/util/json_util.h"
 #include "mediapipe/framework/port.h"
 
 namespace mediapipe {
