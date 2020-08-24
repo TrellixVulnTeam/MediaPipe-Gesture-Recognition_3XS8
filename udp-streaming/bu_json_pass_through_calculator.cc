@@ -1,3 +1,17 @@
+// Copyright 2019 The MediaPipe Authors.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
+//
+//      http://www.apache.org/licenses/LICENSE-2.0
+//
+// Unless required by applicable law or agreed to in writing, software
+// distributed under the License is distributed on an "AS IS" BASIS,
+// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+// See the License for the specific language governing permissions and
+// limitations under the License.
+
 #include "mediapipe/framework/calculator_framework.h"
 #include "mediapipe/framework/port/canonical_errors.h"
 #include <iostream>
@@ -29,6 +43,36 @@ constexpr char kLandmarksTag[] = "LANDMARKS";
 constexpr char kNormLandmarksTag[] = "NORM_LANDMARKS"; // MAD note @to-fix: streaming NORM_LANDMARKS, but they're labeled LANDMARKS
 constexpr char kNormRectTag[] = "NORM_RECT";
 constexpr char kDetectionsTag[] = "DETECTIONS";
+
+
+/*void setup_udp(){
+  // int sockfd;
+  char buffer[MAXLINE];
+  // char *hello = "Hello from client";
+  // struct sockaddr_in     servaddr;
+
+  // Creating socket file descriptor
+  if ( (sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0 ) {
+      perror("socket creation failed");
+      exit(EXIT_FAILURE);
+  }
+
+  memset(&servaddr, 0, sizeof(servaddr));
+
+  // Filling server information
+  servaddr.sin_family = AF_INET;
+  servaddr.sin_port = htons(PORT);
+  servaddr.sin_addr.s_addr = INADDR_ANY;
+
+  // initial testing for connection
+  // while(true){
+  //   sendto(sockfd, (const char *)hello, strlen(hello),
+  //       0, (const struct sockaddr *) &servaddr,
+  //           sizeof(servaddr));
+  //   printf("Hello message sent.\n");
+  // }
+  // close(sockfd);
+} */
 
 
 // A Calculator that simply passes its input Packets and header through,
@@ -88,6 +132,10 @@ class JSONPassThroughCalculator : public CalculatorBase {
     }
     cc->SetOffset(TimestampDiff(0));
 
+
+    //setup_udp();
+
+
     return ::mediapipe::OkStatus();
   }
 
@@ -133,12 +181,6 @@ class JSONPassThroughCalculator : public CalculatorBase {
               const Detection& detection = detections[i];
               // std::cout << "\n----- Detection -----\n " << detection.DebugString() << '\n';
               // wrapper->mutable_detection()->add_detection();
-          std::string msg_buffer;
-					//For JSON conversion
-					proto_ns::util::JsonPrintOptions options;
-					proto_ns::util::MessageToJsonString(detection, &msg_buffer, options);
-					//For testing JSON string
-         	//std::cout << "JSON Palm: " << msg_buffer << '\n';
 
           }
         }
@@ -167,15 +209,27 @@ class JSONPassThroughCalculator : public CalculatorBase {
 
         }
 
+
+        /* std::cout << "  Passing " << cc->Inputs().Get(id).Name() << " to "
+                 << cc->Outputs().Get(id).Name() << " at "
+                 << cc->InputTimestamp().DebugString() << std::endl; */
+
+        // nothing gets to here
+        if (cc->Inputs().HasTag(kNormLandmarksTag)) {
+           //std::cout << "kNormLandmarksTag" << std::endl << std::endl;
+           //std::cout << "  Passing " << cc->Inputs().Get(id).Name() << " to "
+             //      << cc->Outputs().Get(id).Name() << " at "
+               //    << cc->InputTimestamp().DebugString() << std::endl;
+        }
+
         std::string msg_buffer;
-				proto_ns::MessageLite* ConvertToMessageLite(wrapper);
 				//wrapper->SerializeToString(&msg_buffer);
-        // const WrapperHandTracking& pack_wrapper = MakePacket<WrapperHandTracking>(*wrapper).Get<WrapperHandTracking>();
+        const WrapperHandTracking& pack_wrapper = MakePacket<WrapperHandTracking>(*wrapper).Get<WrapperHandTracking>();
 					//For JSON conversion
 				proto_ns::util::JsonPrintOptions options;
-				proto_ns::util::MessageToJsonString(*wrapper, &msg_buffer, options);
+				proto_ns::util::MessageToJsonString(pack_wrapper, &msg_buffer, options);
 					//For testing JSON string
-        std::cout << "JSON Wrapper: " << msg_buffer << '\n';
+         	//std::cout << "JSON Wrapper: " << msg_buffer << '\n';
 
 				//Socket
 				/*sendto(sockfd, msg_buffer.c_str(), msg_buffer.length(),
