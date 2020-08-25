@@ -29,6 +29,7 @@ constexpr char kLandmarksTag[] = "LANDMARKS";
 constexpr char kNormLandmarksTag[] = "NORM_LANDMARKS"; // MAD note @to-fix: streaming NORM_LANDMARKS, but they're labeled LANDMARKS
 constexpr char kNormRectTag[] = "NORM_RECT";
 constexpr char kDetectionsTag[] = "DETECTIONS";
+constexpr char recognizedHandGestureTag[] = "RECOGNIZED_HAND_GESTURE";
 
 void setup_udp(){
 	// int sockfd;
@@ -47,13 +48,6 @@ void setup_udp(){
 	servaddr.sin_port = htons(PORT);
 	servaddr.sin_addr.s_addr = INADDR_ANY;
 	
-	// Initial testing for connection
-	// char *hello = "Hello from client";
-	// while(true){
-	//	sendto(sockfd, (const char*)hello, strlen(hello), 0, (const struct sockaddr *) &servaddr, sizeof(servaddr));
-	//	printf("Hello message sent. \n");
-	// } 
-	// colse(sockfd);
 }
 
 // A Calculator that simply passes its input Packets and header through,
@@ -190,11 +184,26 @@ class JSONPassThroughCalculator : public CalculatorBase {
          	//std::cout << "JSON Hand Rect: " << msg_buffer << '\n';
 
 					//Socket
-					sendto(sockfd, msg_buffer.c_str(), msg_buffer.length(),
-              0, (const struct sockaddr *) &servaddr,
-                  sizeof(servaddr));
+					//sendto(sockfd, msg_buffer.c_str(), msg_buffer.length(),
+            //  0, (const struct sockaddr *) &servaddr,
+              //    sizeof(servaddr));
 
         }
+
+				// For gesture
+				if (cc->Inputs().Get(id).Name() == "recognized_gesture"){
+           const auto& gesture = cc->Inputs().Tag(recognizedHandGestureTag).Get<std::string>();
+                std::cout << "\n----- Gesture -----\n " << gesture << '\n';
+           //std::string msg_buffer;
+           //For JSON conversion
+           //proto_ns::util::JsonPrintOptions options;
+           //proto_ns::util::MessageToJsonString(detection, &msg_buffer, options);
+           //For testing JSON string
+           //std::cout << "JSON Palm: " << msg_buffer << '\n';
+         }
+
+
+
 
         std::string msg_buffer;
 				proto_ns::MessageLite* ConvertToMessageLite(wrapper);

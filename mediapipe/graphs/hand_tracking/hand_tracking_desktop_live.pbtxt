@@ -114,7 +114,9 @@ node {
 	input_stream: "LANDMARKS:hand_landmarks"
 	input_stream: "NORM_RECT:hand_rect"
 	input_stream: "DETECTIONS:palm_detections"
+	input_stream: "RECOGNIZED_HAND_GESTURE:recognized_hand_gesture"
 	output_stream: "LANDMARKS:hand_landmarks_out"
 	output_stream: "NORM_RECT:hand_rect_out"
 	output_stream: "DETECTIONS:palm_detections_out"
+	output_stream: "RECOGNIZED_HAND_GESTURE:recognized_hand_gesture_out"
 }
